@@ -10,25 +10,26 @@ export default function RoomView({ room: initialRoom, onBack }: any) {
   const [selectedType, setSelectedType] = useState('📦');
 
   useEffect(() => {
-    // 1. Fetch items for this room
     const fetchRoomData = async () => {
       const { data } = await supabase.from('room_objects').select('*').eq('room_id', room.id);
       setObjects(data || []);
     };
     fetchRoomData();
 
-    // 2. Real-time listener for objects AND room name changes
+    // Simplify the channel to ensure it catches all relevant changes
     const channel = supabase.channel(`room-${room.id}`)
       .on('postgres_changes', { 
         event: 'INSERT', 
         schema: 'public', 
-        table: 'room_objects', 
-        filter: `room_id=eq.${room.id}` 
+        table: 'room_objects'
       }, (payload) => {
-        setObjects(prev => {
-          if (prev.some(obj => obj.id === payload.new.id)) return prev;
-          return [...prev, payload.new];
-        });
+        // Only add if it belongs to this room and isn't already in state
+        if (payload.new.room_id === room.id) {
+          setObjects(prev => {
+            if (prev.some(obj => obj.id === payload.new.id)) return prev;
+            return [...prev, payload.new];
+          });
+        }
       })
       .on('postgres_changes', {
         event: 'UPDATE',
@@ -36,7 +37,6 @@ export default function RoomView({ room: initialRoom, onBack }: any) {
         table: 'rooms',
         filter: `id=eq.${room.id}`
       }, (payload) => {
-        // Sync the room name across all users instantly
         setRoom(payload.new);
       })
       .subscribe();
@@ -46,39 +46,36 @@ export default function RoomView({ room: initialRoom, onBack }: any) {
 
   const addObject = async (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).id !== 'room-floor') return;
-    await supabase.from('room_objects').insert([{ 
+
+    const newObj = { 
       type: selectedType, 
-      x: e.clientX - 20, 
-      y: e.clientY - 20, 
+      x: e.clientX - 25, 
+      y: e.clientY - 25, 
       room_id: room.id 
-    }]);
+    };
+
+    // 1. Optimistic Update: Show it immediately locally so it doesn't "disappear"
+    const tempId = Math.random().toString();
+    setObjects(prev => [...prev, { ...newObj, id: tempId }]);
+
+    // 2. Save to Database
+    const { error } = await supabase.from('room_objects').insert([newObj]);
+    
+    if (error) {
+      console.error("Placement error:", error);
+      // Remove the fake item if the save failed
+      setObjects(prev => prev.filter(obj => obj.id !== tempId));
+    }
   };
 
-  // --- RENAME FUNCTION (Open to all) ---
+  // --- RENAME FUNCTION ---
   const renameRoom = async () => {
-      const newName = prompt("Enter new room name:", room.name);
-      
-      // Validate input
-      if (!newName || newName.trim() === "" || newName === room.name) return;
+    const newName = prompt("Enter new room name:", room.name);
+    if (!newName || newName.trim() === "" || newName === room.name) return;
 
-      // Perform the update without the strict .single() constraint to avoid coercion errors
-      const { data, error } = await supabase
-        .from('rooms')
-        .update({ name: newName.trim() })
-        .eq('id', room.id)
-        .select();
-
-      if (error) {
-        console.error("Rename Error:", error.message);
-        alert("Could not rename: " + error.message);
-        return;
-      }
-
-      // Check if we got data back before setting state
-      if (data && data.length > 0) {
-        setRoom(data[0]);
-      }
-    };
+    const { data } = await supabase.from('rooms').update({ name: newName.trim() }).eq('id', room.id).select();
+    if (data && data.length > 0) setRoom(data[0]);
+  };
 
   return (
     <main id="room-floor" className="h-screen w-screen bg-slate-50 relative overflow-hidden cursor-crosshair" onClick={addObject}>
@@ -88,13 +85,7 @@ export default function RoomView({ room: initialRoom, onBack }: any) {
         
         <div className="flex items-center gap-3 mt-2 pointer-events-auto">
           <h1 className="text-4xl font-black tracking-tight">{room.name}</h1>
-          <button 
-            onClick={renameRoom}
-            className="p-2 hover:bg-slate-200 rounded-full transition-colors"
-            title="Rename Room"
-          >
-            ✏️
-          </button>
+          <button onClick={renameRoom} className="p-2 hover:bg-slate-200 rounded-full transition-colors">✏️</button>
         </div>
         
         <p className="text-slate-500 font-medium text-sm">Built by {room.owner_name}</p>
