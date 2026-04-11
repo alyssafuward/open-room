@@ -1,0 +1,171 @@
+name: Sync rooms to Supabase
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'public/registry/**/config.json'
+
+jobs:
+  # On PR: sync prod → dev so preview has up-to-date floor plan
+  sync-prod-to-dev:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror prod Supabase into dev
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_DEV_URL: ${{ secrets.SUPABASE_DEV_URL }}
+          SUPABASE_DEV_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_DEV_SERVICE_ROLE_KEY }}
+        run: |
+          node << 'EOF'
+          async function run() {
+            // Fetch all rooms from prod
+            const prodRes = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rooms?select=*`, {
+              headers: {
+                'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+                'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+              },
+            });
+
+            if (!prodRes.ok) {
+              console.error('Failed to fetch prod rooms:', await prodRes.text());
+              process.exit(1);
+            }
+
+            const rooms = await prodRes.json();
+            console.log(`Fetched ${rooms.length} rooms from prod`);
+
+            if (!rooms.length) return;
+
+            // Upsert all into dev
+            const devRes = await fetch(`${process.env.SUPABASE_DEV_URL}/rest/v1/rooms`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': process.env.SUPABASE_DEV_SERVICE_ROLE_KEY,
+                'Authorization': `Bearer ${process.env.SUPABASE_DEV_SERVICE_ROLE_KEY}`,
+                'Prefer': 'resolution=merge-duplicates',
+              },
+              body: JSON.stringify(rooms),
+            });
+
+            if (!devRes.ok) {
+              console.error('Failed to upsert into dev:', await devRes.text());
+              process.exit(1);
+            }
+
+            console.log(`✓ Synced ${rooms.length} rooms from prod → dev`);
+          }
+
+          run().catch(err => { console.error(err); process.exit(1); });
+          EOF
+
+  # On merge to main: update changed rooms in prod, then sync prod → dev
+  sync-on-merge:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find changed registry folders
+        id: changed
+        run: |
+          folders=$(git diff --name-only HEAD~1 HEAD -- 'public/registry/' \
+            | grep 'config\.json' \
+            | sed 's|public/registry/||' \
+            | sed 's|/config\.json||' \
+            | grep -v '^_template$')
+          echo "Found: $folders"
+          echo "folders<<EOF" >> $GITHUB_OUTPUT
+          echo "$folders" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update changed rooms in prod
+        if: steps.changed.outputs.folders != ''
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node << 'EOF'
+          const fs = require('fs');
+
+          const folders = `${{ steps.changed.outputs.folders }}`
+            .split('\n').map(f => f.trim()).filter(Boolean);
+
+          async function syncRoom(folder) {
+            const configPath = `public/registry/${folder}/config.json`;
+            if (!fs.existsSync(configPath)) return;
+
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            const name = config.room_display_name;
+            if (!name) return;
+
+            const res = await fetch(
+              `${process.env.SUPABASE_URL}/rest/v1/rooms?registry_id=eq.${encodeURIComponent(folder)}`,
+              {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+                  'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+                  'Prefer': 'return=representation',
+                },
+                body: JSON.stringify({ name, status: 'active' }),
+              }
+            );
+
+            const data = await res.json();
+            if (!res.ok) { console.error(`Failed: ${folder}`, data); process.exit(1); }
+            if (!data.length) console.warn(`No row found for registry_id="${folder}"`);
+            else console.log(`✓ ${folder} → "${name}", status: active`);
+          }
+
+          Promise.all(folders.map(syncRoom))
+            .catch(err => { console.error(err); process.exit(1); });
+          EOF
+
+      - name: Mirror prod → dev
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_DEV_URL: ${{ secrets.SUPABASE_DEV_URL }}
+          SUPABASE_DEV_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_DEV_SERVICE_ROLE_KEY }}
+        run: |
+          node << 'EOF'
+          async function run() {
+            const prodRes = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rooms?select=*`, {
+              headers: {
+                'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+                'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+              },
+            });
+
+            if (!prodRes.ok) { console.error(await prodRes.text()); process.exit(1); }
+            const rooms = await prodRes.json();
+            console.log(`Fetched ${rooms.length} rooms from prod`);
+            if (!rooms.length) return;
+
+            const devRes = await fetch(`${process.env.SUPABASE_DEV_URL}/rest/v1/rooms`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': process.env.SUPABASE_DEV_SERVICE_ROLE_KEY,
+                'Authorization': `Bearer ${process.env.SUPABASE_DEV_SERVICE_ROLE_KEY}`,
+                'Prefer': 'resolution=merge-duplicates',
+              },
+              body: JSON.stringify(rooms),
+            });
+
+            if (!devRes.ok) { console.error(await devRes.text()); process.exit(1); }
+            console.log(`✓ Synced ${rooms.length} rooms prod → dev`);
+          }
+
+          run().catch(err => { console.error(err); process.exit(1); });
+          EOF

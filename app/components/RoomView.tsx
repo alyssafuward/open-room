@@ -50,7 +50,6 @@ export default function RoomView({ onBack, registryId, room }: {
   const [configError, setConfigError] = useState(false);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState<{ url: string; label: string } | null>(null);
-  const [hoveredHotspot, setHoveredHotspot] = useState<string | null>(null);
   const [registryEntries, setRegistryEntries] = useState<RegistryEntry[]>([]);
   const [registryLoading, setRegistryLoading] = useState(false);
   const [showRoomInfo, setShowRoomInfo] = useState(false);
@@ -180,32 +179,36 @@ export default function RoomView({ onBack, registryId, room }: {
         ))}
 
         {/* Room info icon — bottom right */}
-        {room && (
-          <div className="absolute bottom-4 right-4">
-            <button
-              onClick={() => setShowRoomInfo(v => !v)}
-              className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors text-sm font-black"
-              aria-label="Room info"
-            >
-              i
-            </button>
-            {showRoomInfo && (
-              <div className="absolute bottom-10 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 w-56" onClick={e => e.stopPropagation()}>
-                <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Room Info</p>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400">GitHub</span>
-                    <span className="text-xs font-mono text-slate-700">@{room.github_username}</span>
-                  </div>
+        <div className="absolute bottom-4 right-4">
+          <button
+            onClick={() => setShowRoomInfo(v => !v)}
+            className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors text-sm font-black"
+            aria-label="Room info"
+          >
+            i
+          </button>
+          {showRoomInfo && (
+            <div className="absolute bottom-10 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 w-56" onClick={e => e.stopPropagation()}>
+              <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Room Info</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-400">Name</span>
+                  <span className="text-xs font-bold text-slate-700">{config.room_display_name}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-400">GitHub</span>
+                  <span className="text-xs font-mono text-slate-700">@{room?.github_username ?? config.owner}</span>
+                </div>
+                {room?.registry_id && (
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-400">Room ID</span>
                     <code className="text-xs font-mono font-bold text-indigo-600">{room.registry_id}</code>
                   </div>
-                </div>
+                )}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
 
 
         {/* Room title */}
