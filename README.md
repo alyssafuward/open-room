@@ -7,12 +7,11 @@ Open Room is a community-built building — an infinite floor plan where every r
 Rooms on the floor plan are real contributions. Each room is a folder in this repo containing a background image and a `config.json` that defines what's inside — clickable hotspots, links, artwork, anything. When a PR is merged, the room goes live.
 
 ## Contribute a room
-
 1. **Reserve your spot** — visit the live site, click **+ Add Room** on the floor plan, and fill out the form. You'll get a room ID (e.g. `warm-harbor`).
 2. **Fork this repo** on GitHub.
-3. **Copy the template** *[AI recommended]* — duplicate `public/registry/_template/` and rename it to `public/registry/your-room-id/`.
-4. **Build your room** *[AI recommended]* — add a background image and edit `config.json` to define your hotspots. See the [template README](public/registry/_template/README.md) for the full schema.
-5. **Open a Pull Request** *[AI recommended]* — include a screenshot of your room. Once merged, your tile on the floor plan becomes live.
+3. **Develop your room** with AI-assistance.
+4. **Submit a request** to add your room to the building.  
+See the Contributing tab for more details.
 
 ## The vibe
 
