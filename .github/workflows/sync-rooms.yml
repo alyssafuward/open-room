@@ -131,26 +131,23 @@ jobs:
           node << EOF
           const folders = \`$deleted\`.split('\n').map(f => f.trim()).filter(Boolean);
 
-          async function freeRoom(folder) {
+          async function deleteRoom(folder) {
             const res = await fetch(
               \`\${process.env.SUPABASE_DEV_URL}/rest/v1/rooms?registry_id=eq.\${encodeURIComponent(folder)}\`,
               {
-                method: 'PATCH',
+                method: 'DELETE',
                 headers: {
-                  'Content-Type': 'application/json',
                   'apikey': process.env.SUPABASE_DEV_SERVICE_ROLE_KEY,
                   'Authorization': \`Bearer \${process.env.SUPABASE_DEV_SERVICE_ROLE_KEY}\`,
                   'Prefer': 'return=representation',
                 },
-                body: JSON.stringify({ status: 'reserved', name: null }),
               }
             );
-            const data = await res.json();
-            if (!res.ok) { console.error(\`Failed to free: \${folder}\`, data); process.exit(1); }
-            console.log(\`✓ \${folder} freed in dev (status → reserved)\`);
+            if (!res.ok) { const data = await res.json(); console.error(\`Failed to delete: \${folder}\`, data); process.exit(1); }
+            console.log(\`✓ \${folder} deleted from dev\`);
           }
 
-          Promise.all(folders.map(freeRoom))
+          Promise.all(folders.map(deleteRoom))
             .catch(err => { console.error(err); process.exit(1); });
           EOF
 
@@ -191,23 +188,20 @@ jobs:
           async function syncRoom(folder) {
             const configPath = `public/registry/${folder}/config.json`;
             if (!fs.existsSync(configPath)) {
-              // Room folder was deleted — free the spot back up
+              // Room folder was deleted — remove the row so the grid spot is freed
               const res = await fetch(
                 `${process.env.SUPABASE_URL}/rest/v1/rooms?registry_id=eq.${encodeURIComponent(folder)}`,
                 {
-                  method: 'PATCH',
+                  method: 'DELETE',
                   headers: {
-                    'Content-Type': 'application/json',
                     'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
                     'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
                     'Prefer': 'return=representation',
                   },
-                  body: JSON.stringify({ status: 'reserved', name: null }),
                 }
               );
-              const data = await res.json();
-              if (!res.ok) { console.error(`Failed to free: ${folder}`, data); process.exit(1); }
-              console.log(`✓ ${folder} freed (status → reserved)`);
+              if (!res.ok) { const data = await res.json(); console.error(`Failed to delete: ${folder}`, data); process.exit(1); }
+              console.log(`✓ ${folder} deleted from prod`);
               return;
             }
 
