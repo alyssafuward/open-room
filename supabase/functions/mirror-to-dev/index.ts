@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-const DEV_URL = Deno.env.get('SUPABASE_DEV_URL')!;
-const DEV_KEY = Deno.env.get('SUPABASE_DEV_SERVICE_ROLE_KEY')!;
+const DEV_URL = Deno.env.get('DEV_URL')!;
+const DEV_KEY = Deno.env.get('DEV_SERVICE_ROLE_KEY')!;
 
 serve(async (req) => {
   if (req.method !== 'POST') {
