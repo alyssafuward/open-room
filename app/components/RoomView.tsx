@@ -130,12 +130,12 @@ export default function RoomView({ onBack, registryId, room }: {
   }
 
   return (
-    <main className="min-h-screen w-screen overflow-y-auto overflow-x-hidden bg-stone-100">
-      <div className="relative w-full">
+    <main className="h-screen w-screen overflow-hidden bg-stone-100">
+      <div className="relative w-full h-full">
         <img
           src={config.background_image}
           alt={config.room_display_name}
-          className="w-full h-auto block"
+          className="w-full h-full object-cover block"
           draggable={false}
         />
 
@@ -165,17 +165,20 @@ export default function RoomView({ onBack, registryId, room }: {
           <button
             key={hotspot.id}
             onClick={() => handleHotspot(hotspot)}
-            className="absolute rounded-lg"
+            className="absolute rounded-lg group transition-colors hover:bg-white/20"
             style={{
               left: `${hotspot.x}%`,
               top: `${hotspot.y}%`,
               width: `${hotspot.width}%`,
               height: `${hotspot.height}%`,
-              background: 'transparent',
               cursor: 'pointer',
             }}
             aria-label={hotspot.label}
-          />
+          >
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black/70 text-white text-[11px] font-bold rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              {hotspot.label}
+            </span>
+          </button>
         ))}
 
         {/* Room info icon — bottom right */}
