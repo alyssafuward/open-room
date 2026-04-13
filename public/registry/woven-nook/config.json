@@ -2,16 +2,20 @@
   "room_display_name": "The Threshold",
   "owner": "rspitzer",
   "background_image": "/registry/woven-nook/background.jpeg",
-  "hide_back_button": false,
+  "hide_back_button": true,
+  "links": [
+    { "label": "Begin Your Reading", "url": "https://threshold-chi.vercel.app" }
+  ],
   "hotspots": [
     {
       "id": "threshold-door",
-      "label": "Crossing the Threshold — Coming Soon",
+      "label": "Step through",
       "x": 35,
       "y": 10,
       "width": 30,
       "height": 80,
-      "action": "navigate_floor"
+      "action": "open_url",
+      "url": "https://threshold-chi.vercel.app"
     },
     {
       "id": "exit",
