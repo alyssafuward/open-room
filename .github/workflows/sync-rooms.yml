@@ -74,7 +74,7 @@ jobs:
             .catch(err => { console.error(err); process.exit(1); });
           EOF
 
-      - name: Free deleted rooms in dev
+      - name: Mark deleted rooms in dev
         env:
           SUPABASE_DEV_URL: ${{ secrets.SUPABASE_DEV_URL }}
           SUPABASE_DEV_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_DEV_SERVICE_ROLE_KEY }}
@@ -82,10 +82,10 @@ jobs:
           node << 'EOF'
           const fs = require('fs');
 
-          // Reconcile: fetch all rooms from dev DB, delete any whose top-level registry folder is gone
+          // Reconcile: fetch all active rooms from dev DB, mark deleted any whose registry folder is gone
           async function reconcile() {
             const res = await fetch(
-              `${process.env.SUPABASE_DEV_URL}/rest/v1/rooms?registry_id=not.is.null&select=registry_id`,
+              `${process.env.SUPABASE_DEV_URL}/rest/v1/rooms?registry_id=not.is.null&status=eq.active&select=registry_id`,
               {
                 headers: {
                   'apikey': process.env.SUPABASE_DEV_SERVICE_ROLE_KEY,
@@ -100,22 +100,24 @@ jobs:
               .map(r => r.registry_id)
               .filter(id => !fs.existsSync(`public/registry/${id}/config.json`));
 
-            if (!toDelete.length) { console.log('Nothing to free.'); return; }
+            if (!toDelete.length) { console.log('Nothing to mark deleted.'); return; }
 
             await Promise.all(toDelete.map(async id => {
-              const del = await fetch(
+              const patch = await fetch(
                 `${process.env.SUPABASE_DEV_URL}/rest/v1/rooms?registry_id=eq.${encodeURIComponent(id)}`,
                 {
-                  method: 'DELETE',
+                  method: 'PATCH',
                   headers: {
+                    'Content-Type': 'application/json',
                     'apikey': process.env.SUPABASE_DEV_SERVICE_ROLE_KEY,
                     'Authorization': `Bearer ${process.env.SUPABASE_DEV_SERVICE_ROLE_KEY}`,
                     'Prefer': 'return=representation',
                   },
+                  body: JSON.stringify({ status: 'deleted' }),
                 }
               );
-              if (!del.ok) { console.error(`Failed to delete: ${id}`, await del.json()); process.exit(1); }
-              console.log(`✓ ${id} deleted from dev`);
+              if (!patch.ok) { console.error(`Failed to mark deleted: ${id}`, await patch.json()); process.exit(1); }
+              console.log(`✓ ${id} marked deleted in dev`);
             }));
           }
 
@@ -171,10 +173,10 @@ jobs:
             else console.log(`✓ ${folder} → "${name}", status: active`);
           }
 
-          // Reconcile: delete any DB rows whose registry folder no longer exists
+          // Reconcile: mark deleted any DB rows whose registry folder no longer exists
           async function reconcile() {
             const res = await fetch(
-              `${process.env.SUPABASE_URL}/rest/v1/rooms?registry_id=not.is.null&select=registry_id`,
+              `${process.env.SUPABASE_URL}/rest/v1/rooms?registry_id=not.is.null&status=eq.active&select=registry_id`,
               {
                 headers: {
                   'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -189,22 +191,24 @@ jobs:
               .map(r => r.registry_id)
               .filter(id => !fs.existsSync(`${registryDir}/${id}/config.json`));
 
-            if (!toDelete.length) { console.log('Nothing to delete.'); return; }
+            if (!toDelete.length) { console.log('Nothing to mark deleted.'); return; }
 
             await Promise.all(toDelete.map(async id => {
-              const del = await fetch(
+              const patch = await fetch(
                 `${process.env.SUPABASE_URL}/rest/v1/rooms?registry_id=eq.${encodeURIComponent(id)}`,
                 {
-                  method: 'DELETE',
+                  method: 'PATCH',
                   headers: {
+                    'Content-Type': 'application/json',
                     'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
                     'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
                     'Prefer': 'return=representation',
                   },
+                  body: JSON.stringify({ status: 'deleted' }),
                 }
               );
-              if (!del.ok) { console.error(`Failed to delete: ${id}`, await del.json()); process.exit(1); }
-              console.log(`✓ ${id} deleted from prod`);
+              if (!patch.ok) { console.error(`Failed to mark deleted: ${id}`, await patch.json()); process.exit(1); }
+              console.log(`✓ ${id} marked deleted in prod`);
             }));
           }
 
@@ -225,7 +229,7 @@ jobs:
 
           async function reconcileDev() {
             const res = await fetch(
-              `${process.env.SUPABASE_DEV_URL}/rest/v1/rooms?registry_id=not.is.null&select=registry_id`,
+              `${process.env.SUPABASE_DEV_URL}/rest/v1/rooms?registry_id=not.is.null&status=eq.active&select=registry_id`,
               {
                 headers: {
                   'apikey': process.env.SUPABASE_DEV_SERVICE_ROLE_KEY,
@@ -240,22 +244,24 @@ jobs:
               .map(r => r.registry_id)
               .filter(id => !fs.existsSync(`${registryDir}/${id}/config.json`));
 
-            if (!toDelete.length) { console.log('Dev in sync — nothing to delete.'); return; }
+            if (!toDelete.length) { console.log('Dev in sync — nothing to mark deleted.'); return; }
 
             await Promise.all(toDelete.map(async id => {
-              const del = await fetch(
+              const patch = await fetch(
                 `${process.env.SUPABASE_DEV_URL}/rest/v1/rooms?registry_id=eq.${encodeURIComponent(id)}`,
                 {
-                  method: 'DELETE',
+                  method: 'PATCH',
                   headers: {
+                    'Content-Type': 'application/json',
                     'apikey': process.env.SUPABASE_DEV_SERVICE_ROLE_KEY,
                     'Authorization': `Bearer ${process.env.SUPABASE_DEV_SERVICE_ROLE_KEY}`,
                     'Prefer': 'return=representation',
                   },
+                  body: JSON.stringify({ status: 'deleted' }),
                 }
               );
-              if (!del.ok) { console.error(`Failed to delete from dev: ${id}`, await del.json()); process.exit(1); }
-              console.log(`✓ ${id} deleted from dev`);
+              if (!patch.ok) { console.error(`Failed to mark deleted in dev: ${id}`, await patch.json()); process.exit(1); }
+              console.log(`✓ ${id} marked deleted in dev`);
             }));
           }
 
