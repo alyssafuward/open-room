@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import DiagramModal from './DiagramModal';
 
@@ -53,6 +53,8 @@ export default function RoomView({ onBack, registryId, room }: {
   room?: any;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const showGrid = searchParams.get('grid') === '1';
   const [pageStack, setPageStack] = useState<RoomConfig[]>([]);
   const [config, setConfig] = useState<RoomConfig | null>(null);
   const [configError, setConfigError] = useState(false);
@@ -232,6 +234,22 @@ export default function RoomView({ onBack, registryId, room }: {
             </span>
           </button>
         ))}
+
+        {/* Debug grid overlay — visible when ?grid=1 */}
+        {showGrid && (
+          <div className="absolute inset-0 pointer-events-none">
+            {Array.from({ length: 11 }, (_, i) => i * 10).map(pct => (
+              <div key={`v${pct}`} className="absolute top-0 bottom-0 border-l border-white/40" style={{ left: `${pct}%` }}>
+                <span className="absolute top-1 left-0.5 text-white text-[9px] font-bold bg-black/50 px-0.5 rounded leading-tight">{pct}</span>
+              </div>
+            ))}
+            {Array.from({ length: 11 }, (_, i) => i * 10).map(pct => (
+              <div key={`h${pct}`} className="absolute left-0 right-0 border-t border-white/40" style={{ top: `${pct}%` }}>
+                <span className="absolute top-0.5 left-1 text-white text-[9px] font-bold bg-black/50 px-0.5 rounded leading-tight">{pct}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Room info icon — bottom right */}
         <div className="absolute bottom-4 right-4">
