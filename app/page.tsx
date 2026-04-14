@@ -1,14 +1,25 @@
 "use client";
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import RoomView from './components/RoomView';
 import ReservationModal from './components/ReservationModal';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-export default function OpenRoom() {
+const COMMON_ROOM_SLUG = 'common';
+
+function roomSlug(room: any): string | null {
+  if (room.grid_x === 0 && room.grid_y === 0) return COMMON_ROOM_SLUG;
+  return room.registry_id ?? null;
+}
+
+function OpenRoomInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeSlug = searchParams.get('room');
+
   const [rooms, setRooms] = useState<any[]>([]);
-  const [activeRoom, setActiveRoom] = useState<any>(null);
   const [myId, setMyId] = useState<string>('');
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [reserving, setReserving] = useState<{ x: number; y: number } | null>(null);
@@ -53,10 +64,22 @@ export default function OpenRoom() {
     return () => { supabase.removeChannel(channel); };
   }, [refreshRooms]);
 
-  const handleBack = () => {
-    setActiveRoom(null);
-    refreshRooms(); 
+  const openRoom = (room: any) => {
+    const slug = roomSlug(room);
+    if (!slug) return;
+    router.push(`/?room=${encodeURIComponent(slug)}`);
   };
+
+  const handleBack = () => {
+    router.push('/');
+    refreshRooms();
+  };
+
+  const activeRoom = activeSlug
+    ? (activeSlug === COMMON_ROOM_SLUG
+        ? rooms.find(r => r.grid_x === 0 && r.grid_y === 0)
+        : rooms.find(r => r.registry_id === activeSlug))
+    : null;
 
   if (activeRoom) {
     const isWelcomeRoom = activeRoom.grid_x === 0 && activeRoom.grid_y === 0;
@@ -133,7 +156,7 @@ export default function OpenRoom() {
             return (
               <button
                 key={`${x}-${y}`}
-                onClick={() => setActiveRoom(room)}
+                onClick={() => openRoom(room)}
                 className={`w-28 h-28 rounded-2xl shadow-md flex flex-col items-center justify-center transition-all hover:scale-105 border-2 ${
                   isCommon ? 'bg-white border-amber-400 text-slate-900' :
                   room.owner_id === myId ? 'bg-indigo-600 border-indigo-400 text-white' : 'bg-sky-100 border-sky-300 text-slate-700'
@@ -265,5 +288,13 @@ export default function OpenRoom() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function OpenRoom() {
+  return (
+    <Suspense fallback={null}>
+      <OpenRoomInner />
+    </Suspense>
   );
 }
