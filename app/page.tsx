@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import RoomView from './components/RoomView';
 import ReservationModal from './components/ReservationModal';
 import FloorPlanCanvas from './components/FloorPlanCanvas';
+import LocalPreview from './components/LocalPreview';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
@@ -295,6 +296,9 @@ function OpenRoomInner() {
 }
 
 export default function OpenRoom() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return <LocalPreview />;
+  }
   return (
     <Suspense fallback={null}>
       <OpenRoomInner />
