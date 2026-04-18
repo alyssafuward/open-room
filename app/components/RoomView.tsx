@@ -68,6 +68,7 @@ export default function RoomView({ onBack, registryId, room }: {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [imgAspect, setImgAspect] = useState<number | null>(null);
   const [editRequested, setEditRequested] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(false);
@@ -123,12 +124,14 @@ export default function RoomView({ onBack, registryId, room }: {
     const subConfig = await res.json();
     setPageStack(prev => [...prev, config]);
     setConfig(subConfig);
+    setImgAspect(null);
   };
 
   const handlePageBack = () => {
     const prev = pageStack[pageStack.length - 1];
     setPageStack(stack => stack.slice(0, -1));
     setConfig(prev);
+    setImgAspect(null);
   };
 
   const handleHotspot = (hotspot: Hotspot) => {
@@ -188,12 +191,23 @@ export default function RoomView({ onBack, registryId, room }: {
   }
 
   return (
-    <main className="h-screen w-screen overflow-hidden bg-stone-100">
-      <div className="relative w-full h-full">
+    <main className="h-screen w-screen overflow-hidden bg-stone-100 flex items-center justify-center">
+      <div
+        className="relative"
+        style={imgAspect
+          ? { aspectRatio: String(imgAspect), maxHeight: '100vh', maxWidth: '100%', width: `${imgAspect * 100}vh` }
+          : { width: '100%', height: '100%' }
+        }
+      >
         <img
           src={config.background_image}
           alt={config.room_display_name}
-          className="w-full h-full object-cover block"
+          className="w-full h-full block"
+          style={{ objectFit: 'fill' }}
+          onLoad={(e) => {
+            const img = e.currentTarget;
+            setImgAspect(img.naturalWidth / img.naturalHeight);
+          }}
           draggable={false}
         />
 
