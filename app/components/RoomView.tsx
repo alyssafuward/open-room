@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import DiagramModal from './DiagramModal';
 
@@ -12,10 +13,13 @@ interface Hotspot {
   y: number;
   width: number;
   height: number;
-  action: 'open_modal' | 'open_image' | 'open_url' | 'navigate_floor';
+  action: 'open_modal' | 'open_image' | 'open_url' | 'navigate_floor' | 'navigate_room' | 'navigate_page';
   modal?: string;
   image_url?: string;
   url?: string;
+  room_id?: string;
+  path?: string;
+  hint?: boolean;
 }
 
 interface RoomLink {
@@ -30,6 +34,8 @@ interface RoomConfig {
   hotspots: Hotspot[];
   links?: RoomLink[];
   hide_back_button?: boolean;
+  back_room_id?: string;
+  back_label?: string;
   title?: string;
 }
 
@@ -46,6 +52,10 @@ export default function RoomView({ onBack, registryId, room }: {
   registryId: string;
   room?: any;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [builderMode, setBuilderMode] = useState(searchParams.get('grid') === '1');
+  const [pageStack, setPageStack] = useState<RoomConfig[]>([]);
   const [config, setConfig] = useState<RoomConfig | null>(null);
   const [configError, setConfigError] = useState(false);
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -100,9 +110,30 @@ export default function RoomView({ onBack, registryId, room }: {
     setRegistryLoading(false);
   };
 
+  const navigatePage = async (path: string) => {
+    if (!config) return;
+    const base = `/registry/${registryId}/`;
+    const url = base + path;
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const subConfig = await res.json();
+    setPageStack(prev => [...prev, config]);
+    setConfig(subConfig);
+  };
+
+  const handlePageBack = () => {
+    const prev = pageStack[pageStack.length - 1];
+    setPageStack(stack => stack.slice(0, -1));
+    setConfig(prev);
+  };
+
   const handleHotspot = (hotspot: Hotspot) => {
     if (hotspot.action === 'navigate_floor') {
       onBack();
+    } else if (hotspot.action === 'navigate_room' && hotspot.room_id) {
+      router.push(`/?room=${encodeURIComponent(hotspot.room_id)}`);
+    } else if (hotspot.action === 'navigate_page' && hotspot.path) {
+      navigatePage(hotspot.path);
     } else if (hotspot.action === 'open_url' && hotspot.url) {
       window.open(hotspot.url, '_blank', 'noopener,noreferrer');
     } else if (hotspot.action === 'open_image' && hotspot.image_url) {
@@ -188,7 +219,7 @@ export default function RoomView({ onBack, registryId, room }: {
           <button
             key={hotspot.id}
             onClick={() => handleHotspot(hotspot)}
-            className="absolute rounded-lg group transition-colors hover:bg-white/20"
+            className={`absolute rounded-lg group transition-colors hover:bg-white/25 ${hotspot.hint ? 'bg-white/10 ring-1 ring-white/30' : ''}`}
             style={{
               left: `${hotspot.x}%`,
               top: `${hotspot.y}%`,
@@ -198,11 +229,50 @@ export default function RoomView({ onBack, registryId, room }: {
             }}
             aria-label={hotspot.label}
           >
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black/70 text-white text-[11px] font-bold rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <span className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black/70 text-white text-[11px] font-bold rounded-full whitespace-nowrap transition-opacity pointer-events-none ${hotspot.hint ? 'opacity-60 group-hover:opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
               {hotspot.label}
             </span>
           </button>
         ))}
+
+        {/* Builder mode toggle — bottom left, main room only */}
+        {pageStack.length === 0 && (
+          <button
+            onClick={() => setBuilderMode(v => !v)}
+            className={`absolute bottom-4 left-4 w-8 h-8 rounded-full shadow-md border flex items-center justify-center text-base transition-all ${builderMode ? 'bg-amber-400 border-amber-500' : 'bg-white/90 backdrop-blur-sm border-slate-200'}`}
+            aria-label="Toggle builder mode"
+            title="Builder mode"
+          >
+            🔨
+          </button>
+        )}
+
+        {/* Debug grid overlay — visible in builder mode */}
+        {builderMode && (
+          <div className="absolute inset-0 pointer-events-none">
+            {Array.from({ length: 21 }, (_, i) => i * 5).map(pct => (
+              <div key={`v${pct}`} className="absolute top-0 bottom-0 border-l border-white/40" style={{ left: `${pct}%` }}>
+                <span className="absolute top-1 left-0.5 text-white text-[9px] font-bold bg-black/50 px-0.5 rounded leading-tight">{pct}</span>
+              </div>
+            ))}
+            {Array.from({ length: 21 }, (_, i) => i * 5).map(pct => (
+              <div key={`h${pct}`} className="absolute left-0 right-0 border-t border-white/40" style={{ top: `${pct}%` }}>
+                <span className="absolute top-0.5 left-1 text-white text-[9px] font-bold bg-black/50 px-0.5 rounded leading-tight">{pct}</span>
+              </div>
+            ))}
+            {config.hotspots.map(h => (
+              <div
+                key={`dbg-${h.id}`}
+                className="absolute border-2 border-yellow-400 bg-yellow-400/20"
+                style={{ left: `${h.x}%`, top: `${h.y}%`, width: `${h.width}%`, height: `${h.height}%` }}
+              >
+                <span className="absolute top-0.5 left-0.5 text-yellow-300 text-[9px] font-bold bg-black/60 px-0.5 rounded leading-tight">
+                  {h.x},{h.y} {h.width}×{h.height}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Room info icon — bottom right */}
         <div className="absolute bottom-4 right-4">
@@ -261,10 +331,21 @@ export default function RoomView({ onBack, registryId, room }: {
         {/* Default back button — hidden if room has a custom door hotspot */}
         {!config.hide_back_button && (
           <button
-            onClick={onBack}
+            onClick={() => {
+              if (pageStack.length > 0) {
+                handlePageBack();
+              } else if (config.back_room_id) {
+                router.push(`/?room=${encodeURIComponent(config.back_room_id)}`);
+              } else {
+                onBack();
+              }
+            }}
             className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-black px-4 py-2 rounded-full shadow-md hover:bg-slate-900 hover:text-white transition-all border border-slate-200"
           >
-            ← Floor Plan
+            ← {pageStack.length > 0
+              ? (pageStack[pageStack.length - 1].room_display_name ?? 'Back')
+              : (config.back_label ?? (config.back_room_id ? 'Back' : 'Floor Plan'))
+            }
           </button>
         )}
 

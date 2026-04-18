@@ -1,10 +1,6 @@
 {
   "room_display_name": "AI Superbuilders",
-  "title": "Substack AI Superheroine Builders",
-  "owner": "alyssafuward",
-  "background_image": "/registry/open-ridge/background.jpeg",
-  "hide_back_button": false,
-  "links": [],
+  "background_image": "/registry/soft-grove/pages/ai-superbuilders/background.jpeg",
   "hotspots": [
     {
       "id": "face-1",

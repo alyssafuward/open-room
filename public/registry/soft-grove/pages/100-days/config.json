@@ -1,0 +1,82 @@
+{
+  "room_display_name": "100 days room",
+  "background_image": "/registry/soft-grove/pages/100-days/background.jpeg",
+  "links": [
+    {
+      "label": "Read on Substack",
+      "url": "https://createwithalyssa.substack.com"
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "img-01",
+      "label": "ChatGPT Who?",
+      "x": 3,
+      "y": 5,
+      "width": 20,
+      "height": 30,
+      "action": "open_image",
+      "image_url": "/registry/soft-grove/pages/100-days/assets/01-claude.jpeg"
+    },
+    {
+      "id": "img-02",
+      "label": "Dreaming is Free",
+      "x": 25,
+      "y": 5,
+      "width": 20,
+      "height": 30,
+      "action": "open_image",
+      "image_url": "/registry/soft-grove/pages/100-days/assets/02-dreaming.jpeg"
+    },
+    {
+      "id": "img-03",
+      "label": "Gorgeous Human Being",
+      "x": 47,
+      "y": 5,
+      "width": 20,
+      "height": 30,
+      "action": "open_image",
+      "image_url": "/registry/soft-grove/pages/100-days/assets/03-gorgeous.jpeg"
+    },
+    {
+      "id": "img-04",
+      "label": "Sketchbook",
+      "x": 69,
+      "y": 5,
+      "width": 20,
+      "height": 30,
+      "action": "open_image",
+      "image_url": "/registry/soft-grove/pages/100-days/assets/04-sketchbook.jpeg"
+    },
+    {
+      "id": "img-05",
+      "label": "We Can Do Better",
+      "x": 14,
+      "y": 58,
+      "width": 20,
+      "height": 30,
+      "action": "open_image",
+      "image_url": "/registry/soft-grove/pages/100-days/assets/05-better.jpeg"
+    },
+    {
+      "id": "img-06",
+      "label": "Every Idea is a Thread",
+      "x": 37,
+      "y": 58,
+      "width": 20,
+      "height": 30,
+      "action": "open_image",
+      "image_url": "/registry/soft-grove/pages/100-days/assets/06-thread.jpeg"
+    },
+    {
+      "id": "img-07",
+      "label": "Make Something That Means Something",
+      "x": 60,
+      "y": 58,
+      "width": 20,
+      "height": 30,
+      "action": "open_image",
+      "image_url": "/registry/soft-grove/pages/100-days/assets/07-make-something.jpeg"
+    }
+  ]
+}

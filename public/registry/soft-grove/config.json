@@ -1,83 +1,30 @@
 {
-  "room_display_name": "100 days room",
+  "room_display_name": "Alyssa's Studio",
   "owner": "alyssafuward",
   "background_image": "/registry/soft-grove/background.jpeg",
-  "links": [
-    {
-      "label": "Read on Substack",
-      "url": "https://createwithalyssa.substack.com"
-    }
-  ],
+  "hide_back_button": false,
   "hotspots": [
     {
-      "id": "img-01",
-      "label": "ChatGPT Who?",
-      "x": 3,
+      "id": "door-ai-superbuilders",
+      "label": "AI Superbuilders",
+      "x": 18,
       "y": 5,
-      "width": 20,
-      "height": 30,
-      "action": "open_image",
-      "image_url": "/registry/soft-grove/assets/01-claude.jpeg"
+      "width": 27,
+      "height": 38,
+      "action": "navigate_page",
+      "path": "pages/ai-superbuilders/config.json",
+      "hint": true
     },
     {
-      "id": "img-02",
-      "label": "Dreaming is Free",
-      "x": 25,
-      "y": 5,
+      "id": "door-100-days",
+      "label": "100 Days Room",
+      "x": 40,
+      "y": 45,
       "width": 20,
-      "height": 30,
-      "action": "open_image",
-      "image_url": "/registry/soft-grove/assets/02-dreaming.jpeg"
-    },
-    {
-      "id": "img-03",
-      "label": "Gorgeous Human Being",
-      "x": 47,
-      "y": 5,
-      "width": 20,
-      "height": 30,
-      "action": "open_image",
-      "image_url": "/registry/soft-grove/assets/03-gorgeous.jpeg"
-    },
-    {
-      "id": "img-04",
-      "label": "Sketchbook",
-      "x": 69,
-      "y": 5,
-      "width": 20,
-      "height": 30,
-      "action": "open_image",
-      "image_url": "/registry/soft-grove/assets/04-sketchbook.jpeg"
-    },
-    {
-      "id": "img-05",
-      "label": "We Can Do Better",
-      "x": 14,
-      "y": 58,
-      "width": 20,
-      "height": 30,
-      "action": "open_image",
-      "image_url": "/registry/soft-grove/assets/05-better.jpeg"
-    },
-    {
-      "id": "img-06",
-      "label": "Every Idea is a Thread",
-      "x": 37,
-      "y": 58,
-      "width": 20,
-      "height": 30,
-      "action": "open_image",
-      "image_url": "/registry/soft-grove/assets/06-thread.jpeg"
-    },
-    {
-      "id": "img-07",
-      "label": "Make Something That Means Something",
-      "x": 60,
-      "y": 58,
-      "width": 20,
-      "height": 30,
-      "action": "open_image",
-      "image_url": "/registry/soft-grove/assets/07-make-something.jpeg"
+      "height": 20,
+      "action": "navigate_page",
+      "path": "pages/100-days/config.json",
+      "hint": true
     }
   ]
 }
