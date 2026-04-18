@@ -16,6 +16,17 @@
       "hint": true
     },
     {
+      "id": "how-to-build",
+      "label": "How to Build with Open Room",
+      "x": 50,
+      "y": 5,
+      "width": 15,
+      "height": 25,
+      "action": "navigate_page",
+      "path": "pages/how-to-build/config.json",
+      "hint": true
+    },
+    {
       "id": "door-100-days",
       "label": "100 Days Room",
       "x": 40,

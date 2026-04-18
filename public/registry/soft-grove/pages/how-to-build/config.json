@@ -1,0 +1,44 @@
+{
+  "room_display_name": "How to Build with Open Room",
+  "background_image": "/registry/soft-grove/pages/how-to-build/background.jpeg",
+  "hotspots": [
+    {
+      "id": "step-1-reserve",
+      "label": "Step 1: Reserve a Room",
+      "x": 3,
+      "y": 42,
+      "width": 22,
+      "height": 50,
+      "action": "navigate_floor"
+    },
+    {
+      "id": "step-2-build",
+      "label": "Step 2: Make a Change",
+      "x": 27,
+      "y": 42,
+      "width": 22,
+      "height": 50,
+      "action": "open_modal",
+      "modal": "diagram"
+    },
+    {
+      "id": "step-3-feedback",
+      "label": "Step 3: Test and Feedback",
+      "x": 52,
+      "y": 42,
+      "width": 22,
+      "height": 50,
+      "action": "open_modal",
+      "modal": "diagram"
+    },
+    {
+      "id": "step-4-live",
+      "label": "Step 4: Go Live!",
+      "x": 76,
+      "y": 42,
+      "width": 22,
+      "height": 50,
+      "action": "navigate_floor"
+    }
+  ]
+}
