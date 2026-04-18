@@ -3,32 +3,7 @@
   "owner": "arrawyn",
   "background_image": "/registry/warm-vista/background.jpg",
   "hide_back_button": false,
-  "links": [
-    {
-      "label": "Dose of Wonder",
-      "url": "https://caitlinmccoll.substack.com"
-    },
-    {
-      "label": "The Prompt & The Pen",
-      "url": "https://promptandpen.substack.com"
-    },
-    {
-      "label": "Enter the Village Square App",
-      "url": "https://village-square.pages.dev"
-    },
-    {
-      "label": "Whimsy as Defiance (essay)",
-      "url": "https://caitlinmccoll.substack.com/p/whimsy-as-defiance"
-    },
-    {
-      "label": "Good Vibes Only Is Wrecking People (essay)",
-      "url": "https://caitlinmccoll.substack.com/p/good-vibes-only-is-wrecking-people"
-    },
-    {
-      "label": "Running on Empty — Start Here (essay)",
-      "url": "https://caitlinmccoll.substack.com/p/running-on-empty-what-to-do"
-    }
-  ],
+  "links": [  ],
   "hotspots": [
     {
       "id": "village-square-preview",
@@ -39,6 +14,8 @@
       "height": 45,
       "action": "open_image",
       "image_url": "/registry/warm-vista/village-square-preview.jpg"
+        "url": "https://village-square.pages.dev"
+
     },
     {
       "id": "dose-of-wonder",
@@ -49,6 +26,7 @@
       "height": 45,
       "action": "open_image",
       "image_url": "/registry/warm-vista/dose-of-wonder.png"
+        "url": "https://caitlinmccoll.substack.com"
     },
     {
       "id": "prompt-and-pen",
@@ -59,6 +37,8 @@
       "height": 45,
       "action": "open_image",
       "image_url": "/registry/warm-vista/prompt-and-pen.jpg"
+        "url": "https://promptandpen.substack.com"
+
     },
     {
       "id": "essay-whimsy",
@@ -69,6 +49,8 @@
       "height": 45,
       "action": "open_image",
       "image_url": "/registry/warm-vista/essay-whimsy.jpg"
+        "url": "https://caitlinmccoll.substack.com/p/whimsy-as-defiance-why-softness-is"
+
     },
     {
       "id": "essay-good-vibes",
@@ -79,6 +61,7 @@
       "height": 45,
       "action": "open_image",
       "image_url": "/registry/warm-vista/essay-good-vibes.jpg"
+      "url": "https://caitlinmccoll.substack.com/p/good-vibes-only-is-wrecking-people"
     },
     {
       "id": "essay-running-empty",
@@ -89,6 +72,7 @@
       "height": 45,
       "action": "open_image",
       "image_url": "/registry/warm-vista/essay-running-empty.jpg"
+      "url": "https://caitlinmccoll.substack.com/p/running-on-empty-what-to-do" 
     }
   ]
 }
