@@ -12,10 +12,15 @@ Once their Pull Request is merged, their room goes live on the floor plan.
 
 ## Onboarding
 
-When a Builder starts a session, ask: **"Do you already have your room ID?"**
+When a Builder starts a session, ask for their GitHub username, then look up their reserved room:
 
-- **Yes** → go straight to setup (fork, copy template, build)
-- **No** → tell them to visit the live site first, click **+ Add Room**, and reserve their spot. They'll get a room ID (e.g. `warm-harbor`) that becomes their folder name. A GitHub issue is automatically opened when they reserve — they can find it with `gh issue list --label room`.
+```bash
+gh issue list --label room --search "their-username"
+```
+
+The issue will contain their room ID (e.g. `warm-harbor`). Confirm it with them before moving on.
+
+If no issue is found, they haven't reserved yet — tell them to visit the live site, click **+ Add Room**, and come back. A GitHub issue with their room ID is created automatically when they reserve.
 
 ## The setup flow (handle all of this yourself)
 
@@ -75,7 +80,7 @@ If a Builder wants to update their room after it's already live, they use the **
 
 To find open edit tasks for a specific builder:
 ```
-gh issue list --label room --search "(@github-username)"
+gh issue list --label room --search "github-username"
 ```
 
 Once a task issue is open, the Builder forks the repo, makes their changes to `public/registry/their-room-id/`, and opens a Pull Request referencing the issue.
