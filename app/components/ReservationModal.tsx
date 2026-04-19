@@ -30,7 +30,7 @@ export default function ReservationModal({ x, y, onClose, onSuccess }: {
   onClose: () => void;
   onSuccess: (room: any, roomId: string) => void;
 }) {
-  const [form, setForm] = useState({ github: '', email: '' });
+  const [form, setForm] = useState({ name: '', github: '', email: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +41,7 @@ export default function ReservationModal({ x, y, onClose, onSuccess }: {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.github || !form.email) {
+    if (!form.name || !form.github || !form.email) {
       setError('All fields are required.');
       return;
     }
@@ -66,7 +66,7 @@ export default function ReservationModal({ x, y, onClose, onSuccess }: {
       .from('rooms')
       .insert([{
         name: roomId,
-        owner_name: form.github,
+        owner_name: form.name,
         owner_id: form.github,
         github_username: form.github,
         email: form.email,
@@ -105,6 +105,20 @@ export default function ReservationModal({ x, y, onClose, onSuccess }: {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-slate-400 block mb-1.5">
+              Your Name
+            </label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={e => set('name', e.target.value)}
+              placeholder="e.g. Ada Lovelace"
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+            <p className="text-[11px] text-slate-400 mt-1">Shown on your floor tile.</p>
+          </div>
+
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-slate-400 block mb-1.5">
               GitHub Username
