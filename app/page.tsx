@@ -257,13 +257,13 @@ function OpenRoomInner() {
             onClick={e => e.stopPropagation()}
           >
             <div className="text-4xl mb-4">🎉</div>
-            <h2 className="text-slate-900 text-2xl font-black tracking-tight mb-1">Room Reserved!</h2>
+            <h2 className="text-slate-900 text-2xl font-black tracking-tight mb-1">Congratulations!</h2>
             <p className="text-slate-500 text-sm mb-6 leading-relaxed">
-              This is your room ID. <strong className="text-slate-900">Save it now</strong> — you'll need it to name your folder in the repo. A GitHub issue has also been opened to track your reservation.
+              You've reserved your room. Here's your room name — your AI will need it.
             </p>
 
             <div className="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-5 mb-6 text-center">
-              <p className="text-[10px] uppercase font-black text-indigo-400 tracking-widest mb-2">Your Room ID</p>
+              <p className="text-[10px] uppercase font-black text-indigo-400 tracking-widest mb-2">Your Room Name</p>
               <p className="text-2xl font-black text-indigo-700 font-mono tracking-tight mb-3">{successRoom.roomId}</p>
               <button
                 onClick={() => navigator.clipboard.writeText(successRoom.roomId)}
@@ -273,12 +273,19 @@ function OpenRoomInner() {
               </button>
             </div>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 text-sm text-slate-600 leading-relaxed space-y-2">
-              <p className="font-black text-slate-900 text-xs uppercase tracking-widest mb-3">Next steps</p>
-              <p>1. Fork <code className="bg-slate-100 px-1 rounded text-xs">github.com/alyssafuward/open-room-open-source</code></p>
-              <p>2. Copy <code className="bg-slate-100 px-1 rounded text-xs">registry/_template/</code> → <code className="bg-slate-100 px-1 rounded text-xs">registry/{successRoom.roomId}/</code></p>
-              <p>3. Add your background image and edit <code className="bg-slate-100 px-1 rounded text-xs">config.json</code></p>
-              <p>4. Open a Pull Request</p>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 space-y-3">
+              <p className="font-black text-slate-900 text-xs uppercase tracking-widest">Now, open this with your AI:</p>
+              <a
+                href="https://github.com/alyssafuward/open-room-open-source"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs font-mono text-indigo-500 hover:text-indigo-700 underline underline-offset-4 break-all"
+              >
+                github.com/alyssafuward/open-room-open-source
+              </a>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Tell it: <span className="font-semibold text-slate-800">"I just reserved a room. Help me create it."</span> It'll walk you through everything — forking the repo, setting up your files, and opening a pull request.
+              </p>
             </div>
 
             <button
