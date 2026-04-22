@@ -12,6 +12,8 @@ const WAITLIST = [
   { position: 9,  initials: 'ED' },
   { position: 10, initials: 'ST' },
   { position: 11, initials: 'EP' },
+  { position: 12, initials: 'XT' },
+  { position: 13, initials: 'BX' }    
 ];
 
 export default function WaitlistModal({ onClose }: { onClose: () => void }) {
