@@ -8,61 +8,61 @@
     {
       "id": "village-square-preview",
       "label": "Enter the Village Square",
-      "x": 1,
+      "x": 5,
       "y": 5,
       "width": 12,
       "height": 28,
-      "action": "open_image",
+      "action": "open_url",
       "url": "https://village-square.pages.dev"
     },
     {
       "id": "dose-of-wonder",
       "label": "Dose of Wonder",
-      "x": 14,
+      "x": 35,
       "y": 5,
       "width": 12,
       "height": 28,
-      "action": "open_image",
+      "action": "open_url",
       "url": "https://caitlinmccoll.substack.com"
     },
     {
       "id": "prompt-and-pen",
       "label": "The Prompt & The Pen",
-      "x": 62,
+      "x": 65,
       "y": 5,
       "width": 12,
       "height": 28,
-      "action": "open_image",
+      "action": "open_url",
       "url": "https://promptandpen.substack.com"
     },
     {
       "id": "essay-whimsy",
       "label": "Whimsy as Defiance",
-      "x": 1,
-      "y": 62,
+      "x": 5,
+      "y": 65,
       "width": 12,
       "height": 28,
-      "action": "open_image",
+      "action": "open_url",
       "url": "https://caitlinmccoll.substack.com/p/whimsy-as-defiance"
     },
     {
       "id": "essay-good-vibes",
       "label": "Good Vibes Only Is Wrecking People",
-      "x": 27,
-      "y": 62,
+      "x": 35,
+      "y": 65,
       "width": 12,
       "height": 28,
-      "action": "open_image",
+      "action": "open_url",
       "url": "https://caitlinmccoll.substack.com/p/good-vibes-only-is-wrecking-people"
     },
     {
       "id": "essay-running-empty",
       "label": "Running on Empty — Start Here",
-      "x": 62,
-      "y": 62,
+      "x": 65,
+      "y": 65,
       "width": 12,
       "height": 28,
-      "action": "open_image",
+      "action": "open_url",
       "url": "https://caitlinmccoll.substack.com/p/running-on-empty-what-to-do"
     }
   ]
