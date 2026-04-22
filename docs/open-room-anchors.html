@@ -398,6 +398,7 @@
 <script>
   const total = 9;
   let current = 1;
+  let zoomLevel = 1;
 
   const dotsEl = document.getElementById('dots');
   for (let i = 1; i <= total; i++) {
@@ -411,7 +412,8 @@
     document.getElementById('s' + current)?.classList.remove('active');
     document.querySelectorAll('.dot-pip')[current - 1]?.classList.remove('active');
     current = Math.max(1, Math.min(total, n));
-    document.getElementById('s' + current)?.classList.add('active');
+    const el = document.getElementById('s' + current);
+    if (el) { el.style.transform = `scale(${zoomLevel})`; el.classList.add('active'); }
     document.querySelectorAll('.dot-pip')[current - 1]?.classList.add('active');
     document.getElementById('counter').textContent = current + ' / ' + total;
   }
@@ -419,7 +421,6 @@
   function next() { go(current + 1); }
   function prev() { go(current - 1); }
 
-  let zoomLevel = 1;
   function zoom(dir) {
     zoomLevel = Math.min(2, Math.max(0.5, zoomLevel + dir * 0.1));
     document.querySelectorAll('.card').forEach(c => c.style.transform = `scale(${zoomLevel})`);
