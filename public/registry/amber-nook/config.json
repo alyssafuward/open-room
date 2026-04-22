@@ -1,0 +1,48 @@
+{
+  "room_display_name": "The Half-Built Workshop",
+  "owner": "leedrozak",
+  "background_image": "/registry/amber-nook/background.webp",
+  "hide_back_button": true,
+  "links": [],
+  "hotspots": [
+    {
+      "id": "blueprint",
+      "label": "The Blueprint — DigiNav Compass on Substack",
+      "x": 3,
+      "y": 2,
+      "width": 32,
+      "height": 45,
+      "action": "open_url",
+      "url": "https://diginavcompass.news"
+    },
+    {
+      "id": "pegboard",
+      "label": "Where I build things",
+      "x": 42,
+      "y": 5,
+      "width": 20,
+      "height": 45,
+      "action": "open_url",
+      "url": "https://github.com/leedrozak"
+    },
+    {
+      "id": "mug",
+      "label": "What I'm Reading",
+      "x": 48,
+      "y": 48,
+      "width": 8,
+      "height": 15,
+      "action": "open_url",
+      "url": "/registry/amber-nook/assets/whatimreading.jpg"
+    },
+    {
+      "id": "door",
+      "label": "Back to the floor plan",
+      "x": 82,
+      "y": 5,
+      "width": 14,
+      "height": 65,
+      "action": "navigate_floor"
+    }
+  ]
+}
