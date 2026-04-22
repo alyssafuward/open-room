@@ -46,13 +46,13 @@
     },
     {
       "id": "anchors-slides",
-      "label": "Open Room Anchors",
+      "label": "Open Room Onboarding",
       "x": 25,
       "y": 65,
       "width": 10,
       "height": 10,
       "action": "open_url",
-      "url": "https://alyssafuward.github.io/open-room-open-source/open-room-anchors.html"
+      "url": "https://alyssafuward.github.io/open-room-open-source/"
     },
     {
       "id": "exit-door",
