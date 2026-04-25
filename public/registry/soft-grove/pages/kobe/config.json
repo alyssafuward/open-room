@@ -1,9 +1,6 @@
 {
   "room_display_name": "Kobe",
-  "owner": "afwcoaching-beep",
-  "background_image": "/registry/rosy-ridge/background.jpeg",
-  "hide_back_button": false,
-  "links": [],
+  "background_image": "/registry/soft-grove/pages/kobe/background.jpeg",
   "hotspots": [
     {
       "id": "bus-link",
